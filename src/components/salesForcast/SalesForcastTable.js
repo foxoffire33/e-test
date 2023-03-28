@@ -8,12 +8,18 @@ import axios from "axios";
 import { data } from "autoprefixer";
 import PredictionTableHead from './PredictionTableHead';
 import { AXIOS_REQUEST_ACTION } from '@/actions/AxiosRequestActions';
+import DisplayErrorMessages from '../DisplayErrorMessages';
+import Modal from '../Modal';
+import { MODAL_ACTIONS } from '@/actions/ModalActions';
 
 export default function SalesForcastTable() {
     const reducer = (state, action) => {
         switch (action.type) {
+            case MODAL_ACTIONS.MODAL_OPEN: return { ...state, showModal: true };
+            case MODAL_ACTIONS.MODAL_CLOSE:
+                return { ...state, showModal: false };
             case AXIOS_REQUEST_ACTION.FETCH:
-                return { ...state, isLoading: true, error: null };
+                return { ...state, isLoading: true, error: null, modalOpen: false };
             case AXIOS_REQUEST_ACTION.SCCESS:
                 return {
                     ...state,
@@ -40,9 +46,11 @@ export default function SalesForcastTable() {
             totalPages: 0,
         },
         data: [],
-        error: null
+        error: null,
+        showModal: false
     };
     const [state, dispatch] = useReducer(reducer, initialState);
+
     const [requestState, setRequestState] = useState({
         type: null,
         article: null,
@@ -69,6 +77,11 @@ export default function SalesForcastTable() {
     return (
         <div className="tw-flex tw-flex-col">
             <div className="tw-overflow-x-auto">
+                <button type='button' onClick={() => dispatch({ type: MODAL_ACTIONS.MODAL_OPEN })}>Open modal</button>
+                <Modal title='Prediction information' showModal={state.showModal} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })}>
+                    Testing
+                </Modal>
+                <DisplayErrorMessages errorMessages={[state.error]} />
                 <div className="tw-p-1.5 tw-w-full tw-inline-block tw-align-middle">
                     <div class="tw-inline-block tw-relative tw-w-64">
                         <Selector selectText='Article' selectOptions={state.filters?.article?.options} callback={(itemID) => { setRequestState({ ...requestState, article: itemID, pageNumber: 1 }) }} />
@@ -97,7 +110,7 @@ export default function SalesForcastTable() {
                         <table className="tw-min-w-full tw-divide-gray-200 tw-border-collapse tw-border tw-border-slate-500">
                             <PredictionTableHead />
                             <tbody className="tw-min-w-full tw-divide-gray-200">
-                                <PredictionTableBody data={state.data} isLoading={state.isLoading} />
+                                <PredictionTableBody data={state.data} isLoading={state.isLoading} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })} />
                             </tbody>
                         </table>
                         <Pagination currentPage={requestState.pageNumber} totalPages={state.pagination.totalPages} onPageChange={(pageNumber) => { setRequestState({ ...requestState, pageNumber: pageNumber }) }} />

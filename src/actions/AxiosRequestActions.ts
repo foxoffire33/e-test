@@ -4,4 +4,5 @@ export const AXIOS_REQUEST_ACTION = {
     DELETE: 'delete',
     SCCESS: 'success',
     ERROR: 'error',
+    MODALOPEN: 'modalOpen'
 }

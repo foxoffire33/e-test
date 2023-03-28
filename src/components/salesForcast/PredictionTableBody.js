@@ -4,7 +4,7 @@ import { useReducer } from "react"
 import axios from "axios";
 import { AXIOS_REQUEST_ACTION } from "@/actions/AxiosRequestActions";
 
-export default function PredictionTableBody({ data }) {
+export default function PredictionTableBody({ data, setShowModal }) {
 
     const initialState = {
         isLoading: false,
@@ -18,7 +18,7 @@ export default function PredictionTableBody({ data }) {
             case AXIOS_REQUEST_ACTION.SCCESS:
                 return { ...state, isLoading: false };
             case AXIOS_REQUEST_ACTION.ERROR:
-                return { ...state, isLoading: false, error: [] };
+                return { ...state, isLoading: false, error: action.payload.data.error };
             default:
                 throw new Error('Invalid action type');
         }
