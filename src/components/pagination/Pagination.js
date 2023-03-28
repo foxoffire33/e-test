@@ -9,6 +9,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         startPageNumber = Math.max(endPageNumber - MAX_PAGE_LINKS + 1, 1);
     }
 
+    // This code uses the Array.from() method to create an array of numbers representing a range of page numbers between startPageNumber and endPageNumber
     const pageNumbers = Array.from({ length: endPageNumber - startPageNumber + 1 }, (_, i) => startPageNumber + i);
 
     return (<>

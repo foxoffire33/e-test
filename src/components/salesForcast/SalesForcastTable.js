@@ -9,10 +9,7 @@ import { data } from "autoprefixer";
 import PredictionTableHead from './PredictionTableHead';
 import { AXIOS_REQUEST_ACTION } from '@/actions/AxiosRequestActions';
 
-export default function () {
-
-    console.log("ENV", process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST);
-
+export default function SalesForcastTable() {
     const reducer = (state, action) => {
         switch (action.type) {
             case AXIOS_REQUEST_ACTION.FETCH:

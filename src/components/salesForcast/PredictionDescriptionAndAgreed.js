@@ -3,7 +3,7 @@ import axios from "axios";
 import Updateingrecordindicator from "../loading/Updateingrecordindicator";
 import { AXIOS_REQUEST_ACTION } from "@/actions/AxiosRequestActions";
 
-export default function ({ clientID, articleID, year, quarter, type, description, isAgreed }) {
+export default function PredictionDescriptionAndAgreed({ clientID, articleID, year, quarter, type, description, isAgreed }) {
 
     let timer = null
 

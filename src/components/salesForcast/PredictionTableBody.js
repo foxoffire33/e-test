@@ -4,7 +4,7 @@ import { useReducer } from "react"
 import axios from "axios";
 import { AXIOS_REQUEST_ACTION } from "@/actions/AxiosRequestActions";
 
-export default function ({ data }) {
+export default function PredictionTableBody({ data }) {
 
     const initialState = {
         isLoading: false,
