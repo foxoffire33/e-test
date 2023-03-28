@@ -36,7 +36,7 @@ export default function PredictionOverride({ children, clientID, articleID, year
                 { overridePrediction: event.target.value })
                 .then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
                 .catch(error => dispatch({ type: AXIOS_REQUEST_ACTION.ERROR, payload: error.message }));
-        }, 1000);
+        }, process.env.NEXT_PUBLIC_ENV_VARIABLE_TIMEOUT);
     }
 
     if (state.isLoading) {

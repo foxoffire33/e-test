@@ -9,10 +9,7 @@ export default function PredictionDescriptionAndAgreed({ clientID, articleID, ye
 
     const onKeyUp = (event) => {
         clearTimeout(timer);
-
-        timer = setTimeout(() => {
-            updateDescription(event.target.value);
-        }, 1000);
+        timer = setTimeout(() => updateDescription(event.target.value), process.env.NEXT_PUBLIC_ENV_VARIABLE_TIMEOUT);
     }
 
     const reducer = (state, action) => {

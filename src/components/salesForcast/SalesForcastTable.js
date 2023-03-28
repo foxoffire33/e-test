@@ -60,7 +60,7 @@ export default function SalesForcastTable() {
 
     useEffect(() => {
         reloadPage();
-    }, []);
+    }, [requestState]);
 
     if (state.isLoading) {
         return (<PredictionTableBodyLoading />);
@@ -100,7 +100,7 @@ export default function SalesForcastTable() {
                                 <PredictionTableBody data={state.data} isLoading={state.isLoading} />
                             </tbody>
                         </table>
-                        <Pagination currentPage={state.pagination.currentPage} totalPages={state.pagination.totalPages} onPageChange={(pageNumber) => { setRequestState({ ...requestState, pageNumber: pageNumber }) }} />
+                        <Pagination currentPage={requestState.pageNumber} totalPages={state.pagination.totalPages} onPageChange={(pageNumber) => { setRequestState({ ...requestState, pageNumber: pageNumber }) }} />
                     </div>
                 </div>
             </div>

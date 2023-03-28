@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function Selector({ selectOptions, callback }) {
+export default function Selector({ selectText, selectOptions, callback }) {
     const [inputValue, setInputValue] = useState('');
     const [open, setOpen] = useState(false);
 
@@ -8,7 +8,7 @@ export default function Selector({ selectOptions, callback }) {
         <div className="tw-w-72 tw-font-medium">
             <div
                 onClick={() => setOpen(!open)}
-                className={`tw-bg-white tw-w-full tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded ${!selected && "tw-text-gray-700"}`}
+                className={`tw-bg-white tw-w-full tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={'currentColor'} className="tw-w-6 tw-h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
@@ -29,7 +29,8 @@ export default function Selector({ selectOptions, callback }) {
                     className={`tw-p-2 tw-text-sm tw-hover:tw-bg-sky-600 tw-hover:tw-text-white`}
                     onClick={() => {
                         callback(null);
-                        setOpen(false);
+                        setOpen(true);
+                        setInputValue('')
                     }}
                 >
                     Clear
@@ -38,7 +39,6 @@ export default function Selector({ selectOptions, callback }) {
                     <li
                         key={option.id}
                         className={`tw-p-2 tw-text-sm tw-hover:tw-bg-sky-600 tw-hover:tw-text-white
-             ${option?.name?.toLowerCase() === selected?.toLowerCase() && "tw-bg-sky-600 tw-text-white"}
             ${option?.name?.toLowerCase().startsWith(inputValue) ? "tw-block" : "tw-hidden"}`}
                         onClick={() => {
                             callback(option?.id);
