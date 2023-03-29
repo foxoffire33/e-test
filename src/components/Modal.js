@@ -1,4 +1,4 @@
-export default function Modal({ showModal, setShowModal, children, title }) {
+export default function Modal({ showModal, closeButton, children, title }) {
     if (showModal) {
         return (
             <div className="tw-relative tw-z-10" aria-labelledby="tw-modal-title" role="dialog" aria-modal="true">
@@ -22,7 +22,7 @@ export default function Modal({ showModal, setShowModal, children, title }) {
                                 <button
                                     type="button"
                                     className="tw-inline-flex tw-w-full tw-justify-center tw-rounded-md tw-bg-red-600 tw-px-3 tw-py-2 tw-text-sm tw-font-semibold tw-text-white tw-shadow-sm tw-hover:bg-red-500 sm:tw-ml-3 sm:tw-w-auto"
-                                    onClick={setShowModal} >
+                                    onClick={closeButton} >
                                     Close
                                 </button>
                             </div>

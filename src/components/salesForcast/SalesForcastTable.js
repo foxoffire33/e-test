@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import PredictionTableBody from './PredictionTableBody'
+import React, { Suspense, useState } from 'react';
 import PredictionTableBodyLoading from '../loading/PredictionTableBodyLoading';
 import Pagination from '../pagination/Pagination';
 import Selector from '../Selector';
@@ -7,115 +6,63 @@ import { useReducer, useEffect } from "react"
 import axios from "axios";
 import { data } from "autoprefixer";
 import PredictionTableHead from './PredictionTableHead';
-import { AXIOS_REQUEST_ACTION } from '@/actions/AxiosRequestActions';
+import { AXIOS_REQUEST_ACTION } from '@/Data/AxiosRequestActions';
 import DisplayErrorMessages from '../DisplayErrorMessages';
 import Modal from '../Modal';
-import { MODAL_ACTIONS } from '@/actions/ModalActions';
+import { MODAL_ACTIONS } from '@/Data/ModalActions';
+import { createResource } from '@/Data/Api/Predictions';
+import paginationLoading from '../loading/paginationLoading';
+
+const PredictionTableBody = React.lazy(() => import('./PredictionTableBody'));
 
 export default function SalesForcastTable() {
-    const reducer = (state, action) => {
-        switch (action.type) {
-            case MODAL_ACTIONS.MODAL_OPEN: return { ...state, showModal: true };
-            case MODAL_ACTIONS.MODAL_CLOSE:
-                return { ...state, showModal: false };
-            case AXIOS_REQUEST_ACTION.FETCH:
-                return { ...state, isLoading: true, error: null, modalOpen: false };
-            case AXIOS_REQUEST_ACTION.SCCESS:
-                return {
-                    ...state,
-                    isLoading: false,
-                    data: action.payload.data.data,
-                    filters: action.payload.data.meta.filters,
-                    pagination: action.payload.data.meta.pagination,
-                };
-            case AXIOS_REQUEST_ACTION.ERROR:
-                return { ...state, isLoading: false, error: [] };
-            default:
-                throw new Error('Invalid action type');
-        }
-    }
-
-    const initialState = {
-        isLoading: false,
-        filters: {
-            article: { options: [] },
-            client: { options: [] }
-        },
-        pagination: {
-            currentPage: 0,
-            totalPages: 0,
-        },
-        data: [],
-        error: null,
-        showModal: false
-    };
-    const [state, dispatch] = useReducer(reducer, initialState);
-
-    const [requestState, setRequestState] = useState({
-        type: null,
-        article: null,
-        client: null,
-        year: null,
-        pageNumber: 1,
-    });
-
-    const reloadPage = async (pageNumber = 1) => {
-        dispatch({ type: 'fetch' });
-        axios.get(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/`, { params: requestState })
-            .then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
-            .catch(error => dispatch({ type: AXIOS_REQUEST_ACTION.ERROR, payload: error.message }));
-    }
-
-    useEffect(() => {
-        reloadPage();
-    }, [requestState]);
-
-    if (state.isLoading) {
-        return (<PredictionTableBodyLoading />);
-    }
+    const [showModal, setShowModal] = useState(false);
+    const resource = createResource();
 
     return (
         <div className="tw-flex tw-flex-col">
             <div className="tw-overflow-x-auto">
-                <button type='button' onClick={() => dispatch({ type: MODAL_ACTIONS.MODAL_OPEN })}>Open modal</button>
-                <Modal title='Prediction information' showModal={state.showModal} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })}>
+                <button type='button' onClick={() => setShowModal(true) }>Open modal</button>
+                <Modal title='Prediction information' showModal={showModal} closeButton={() => setShowModal(false)}>
                     Testing
                 </Modal>
-                <DisplayErrorMessages errorMessages={[state.error]} />
-                <div className="tw-p-1.5 tw-w-full tw-inline-block tw-align-middle">
-                    <div class="tw-inline-block tw-relative tw-w-64">
-                        <Selector selectText='Article' selectOptions={state.filters?.article?.options} callback={(itemID) => { setRequestState({ ...requestState, article: itemID, pageNumber: 1 }) }} />
+                <DisplayErrorMessages errorMessages={[[]]} />
+                <Suspense fallback={<PredictionTableBodyLoading />}>
+                    <div className="tw-p-1.5 tw-w-full tw-inline-block tw-align-middle">
+                        <div class="tw-inline-block tw-relative tw-w-64">
+                            <Selector selectText='Article' selectOptions={resource?.data?.meta?.filters?.article?.options} callback={(itemID) => { resource.setRequestState({ ...resource.requestState, article: itemID, page: 1 }) }} />
+                        </div>
+                        <div class="tw-inline-block tw-relative tw-w-64">
+                            <Selector selectText='Client' selectOptions={[]} callback={(itemID) => { resource.setRequestState({ ...resource.requestState, client: itemID, page: 1 }) }} />
+                        </div>
+                        <div class="tw-inline-block tw-relative tw-w-64">
+                            <Selector selectText='type' selectOptions={[
+                                { id: 0, name: 'All' },
+                                { id: 1, name: 'Recuring' },
+                                { id: 2, name: 'Indencieel' }
+                            ]}
+                                callback={(itemID) => { resource.setRequestState({ ...resource.requestState, type: itemID }) }}
+                            />
+                        </div>
+                        <div class="tw-inline-block tw-relative tw-w-64">
+                            <input
+                                type="number"
+                                className="tw-bg-white tw-w-full tw-ml-8 tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded tw-text-gray-700" placeholder="Year..."
+                                defaultValue={resource.requestState.year}
+                                onChange={(event) => event.target.value.length > 3 ? resource.setRequestState({ ...resource.requestState, year: event.target.value, pageNumber: 1 }) : resource.setRequestState({ ...resource.requestState, year: null })}
+                            />
+                        </div>
+                        <div>
+                            <table className="tw-min-w-full tw-divide-gray-200 tw-border-collapse tw-border tw-border-slate-500">
+                                <PredictionTableHead />
+                                <tbody className="tw-min-w-full tw-divide-gray-200">
+                                    <PredictionTableBody resource={resource} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })} />
+                                </tbody>
+                            </table>
+                            <Pagination resource={resource} />
+                        </div>
                     </div>
-                    <div class="tw-inline-block tw-relative tw-w-64">
-                        <Selector selectText='Client' selectOptions={state.filters?.client?.options} callback={(itemID) => { setRequestState({ ...requestState, client: itemID, pageNumber: 1 }) }} />
-                    </div>
-                    <div class="tw-inline-block tw-relative tw-w-64">
-                        <Selector selectText='type' selectOptions={[
-                            { id: 0, name: 'All' },
-                            { id: 1, name: 'Recuring' },
-                            { id: 2, name: 'Indencieel' }
-                        ]}
-                            callback={(itemID) => { setRequestState({ ...requestState, type: itemID }) }}
-                        />
-                    </div>
-                    <div class="tw-inline-block tw-relative tw-w-64">
-                        <input
-                            type="number"
-                            className="tw-bg-white tw-w-full tw-ml-8 tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded tw-text-gray-700" placeholder="Year..."
-                            defaultValue={requestState.year}
-                            onChange={(event) => event.target.value.length > 3 ? setRequestState({ ...requestState, year: event.target.value, pageNumber: 1 }) : setRequestState({ ...requestState, year: null })}
-                        />
-                    </div>
-                    <div>
-                        <table className="tw-min-w-full tw-divide-gray-200 tw-border-collapse tw-border tw-border-slate-500">
-                            <PredictionTableHead />
-                            <tbody className="tw-min-w-full tw-divide-gray-200">
-                                <PredictionTableBody data={state.data} isLoading={state.isLoading} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })} />
-                            </tbody>
-                        </table>
-                        <Pagination currentPage={requestState.pageNumber} totalPages={state.pagination.totalPages} onPageChange={(pageNumber) => { setRequestState({ ...requestState, pageNumber: pageNumber }) }} />
-                    </div>
-                </div>
+                </Suspense>
             </div>
         </div>
     )

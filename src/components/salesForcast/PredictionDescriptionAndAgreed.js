@@ -1,10 +1,16 @@
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
+import { useRouter } from 'next/router';
 import axios from "axios";
-import { AXIOS_REQUEST_ACTION } from "@/actions/AxiosRequestActions";
+import { AXIOS_REQUEST_ACTION } from "@/Data/AxiosRequestActions";
 
 export default function PredictionDescriptionAndAgreed({ clientID, articleID, year, quarter, type, description, isAgreed }) {
 
     let timer = null
+    const abortController = new AbortController();
+    const initState = { isLoading: false, error: null, description: description }
+
+    useEffect(() => { return () => abortController.abort() }, []);
+
 
     const onKeyUp = (event) => {
         clearTimeout(timer);
@@ -18,24 +24,20 @@ export default function PredictionDescriptionAndAgreed({ clientID, articleID, ye
             case AXIOS_REQUEST_ACTION.SCCESS:
                 return { ...state, description: action.payload.data.data.description, isLoading: false };
             case AXIOS_REQUEST_ACTION.ERROR:
-                return { ...state, isLoading: false, error: action.payload.data.error  };
+                return { ...state, isLoading: false, error: action.payload.data.error };
             default:
                 throw new Error('Invalid action type');
         }
-    }
-
-    const initState = {
-        isLoading: false,
-        error: null,
-        description: description,
     }
 
     const [state, dispatch] = useReducer(reducer, initState);
 
     const updateDescription = (changedDescription) => {
         dispatch({ type: AXIOS_REQUEST_ACTION.PUT });
-        axios.put(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/${clientID}/${articleID}/${year}/${quarter}/${type}`, { description: changedDescription })
-            .then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
+        axios.put(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/${clientID}/${articleID}/${year}/${quarter}/${type}`,
+            { description: changedDescription },
+            { cancelToken: abortController.signal.cancelToken }
+        ).then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
             .catch(error => dispatch({ type: AXIOS_REQUEST_ACTION.ERROR, payload: error.message }));
     };
 
@@ -43,7 +45,10 @@ export default function PredictionDescriptionAndAgreed({ clientID, articleID, ye
         setChecked(!checked);
         isAgreed = checked;
         dispatch({ type: AXIOS_REQUEST_ACTION.PUT });
-        axios.put(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/${clientID}/${articleID}/${year}/${quarter}/${type}/agree`, { isAgreed: !checked })
+        axios.put(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/${clientID}/${articleID}/${year}/${quarter}/${type}/agree`,
+            { isAgreed: !checked },
+            { cancelToken: abortController.signal.cancelToken },
+        )
             .then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
             .catch(error => dispatch({ type: AXIOS_REQUEST_ACTION.ERROR, payload: error.message }));
     }

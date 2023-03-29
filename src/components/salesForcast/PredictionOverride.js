@@ -1,16 +1,15 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import axios from "axios";
-import { AXIOS_REQUEST_ACTION } from "@/actions/AxiosRequestActions";
+import { AXIOS_REQUEST_ACTION } from "@/Data/AxiosRequestActions";
 
 export default function PredictionOverride({ children, clientID, articleID, year, quarter, type, override }) {
 
     let timer = null
 
-    const initialState = {
-        isLoading: false,
-        error: null,
-        override: override,
-    };
+    const initialState = { isLoading: false, error: null, override: override };
+    const abortController = new AbortController();
+
+    useEffect(() => { return () => abortController.abort(); });
 
     const reducer = (state, action) => {
         switch (action.type) {
@@ -19,7 +18,7 @@ export default function PredictionOverride({ children, clientID, articleID, year
             case AXIOS_REQUEST_ACTION.SCCESS:
                 return { ...state, override: action.payload.data.data.overridePrediction, isLoading: false };
             case AXIOS_REQUEST_ACTION.ERROR:
-                return { ...state, isLoading: false, error: action.payload.data.error  };
+                return { ...state, isLoading: false, error: action.payload.data.error };
             default:
                 throw new Error('Invalid action type');
         }
@@ -32,7 +31,9 @@ export default function PredictionOverride({ children, clientID, articleID, year
         timer = setTimeout(() => {
             dispatch({ type: AXIOS_REQUEST_ACTION.PUT });
             axios.put(`${process.env.NEXT_PUBLIC_ENV_VARIABLE_HOST}/prediction/${clientID}/${articleID}/${year}/${quarter}/${type}`,
-                { overridePrediction: event.target.value })
+                { overridePrediction: event.target.value },
+                { cancelToken: abortController.signal.cancelToken }
+            )
                 .then(response => dispatch({ type: AXIOS_REQUEST_ACTION.SCCESS, payload: response }))
                 .catch(error => dispatch({ type: AXIOS_REQUEST_ACTION.ERROR, payload: error.message }));
         }, process.env.NEXT_PUBLIC_ENV_VARIABLE_TIMEOUT);
