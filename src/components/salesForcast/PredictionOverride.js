@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
 import { AXIOS_REQUEST_ACTION } from "@/Data/AxiosRequestActions";
+import LoadingAnimation from "../loading/LoadingAnimation";
 
 export default function PredictionOverride({ children, clientID, articleID, year, quarter, type, override }) {
 
@@ -39,6 +40,10 @@ export default function PredictionOverride({ children, clientID, articleID, year
         }, process.env.NEXT_PUBLIC_ENV_VARIABLE_TIMEOUT);
     }
 
+    if (state.isLoading) {
+        return (<td colSpan="2"><LoadingAnimation /></td>)
+    }
+
     return (
         <>
             <td className={`tw-text-sm tw-text-gray-800 tw-whitespace-nowrap tw-border tw-border-slate-700 tw-text-center tw-border-2`}>
@@ -50,7 +55,6 @@ export default function PredictionOverride({ children, clientID, articleID, year
                     step="0.01"
                     className={`tw-form-input tw-form-input tw-text-gray-700 tw-border-gray-300 tw-rounded-sm tw-py-2 tw-leading-tight tw-border-2
                     ${state.error ? 'tw-border-red-500' : 'tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent'}
-                    ${state.isLoading ? 'tw-animate-pulse tw-bg-sky-400 tw-opacity-100' : ''}
                     `}
                     id="exampleFormControlInput1"
                     placeholder="Override prediction"

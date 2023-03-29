@@ -2,18 +2,10 @@ import React, { Suspense, useState } from 'react';
 import PredictionTableBodyLoading from '../loading/PredictionTableBodyLoading';
 import Pagination from '../pagination/Pagination';
 import Selector from '../Selector';
-import { useReducer, useEffect } from "react"
-import axios from "axios";
-import { data } from "autoprefixer";
 import PredictionTableHead from './PredictionTableHead';
-import { AXIOS_REQUEST_ACTION } from '@/Data/AxiosRequestActions';
-import DisplayErrorMessages from '../DisplayErrorMessages';
 import Modal from '../Modal/Modal';
-import { MODAL_ACTIONS } from '@/Data/ModalActions';
 import { createResource } from '@/Data/Api/Predictions';
-import paginationLoading from '../loading/paginationLoading';
 import PredictionInofrmationModalContent from '../Modal/Content/PredictionInofrmationModalContent';
-import LoadingAnimation from '../loading/LoadingAnimation';
 
 const PredictionTableBody = React.lazy(() => import('./PredictionTableBody'));
 

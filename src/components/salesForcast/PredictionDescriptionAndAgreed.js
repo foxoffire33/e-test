@@ -2,6 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useRouter } from 'next/router';
 import axios from "axios";
 import { AXIOS_REQUEST_ACTION } from "@/Data/AxiosRequestActions";
+import LoadingAnimation from "../loading/LoadingAnimation";
 
 export default function PredictionDescriptionAndAgreed({ clientID, articleID, year, quarter, type, description, isAgreed }) {
 
@@ -55,13 +56,16 @@ export default function PredictionDescriptionAndAgreed({ clientID, articleID, ye
 
     const [checked, setChecked] = useState(isAgreed);
 
+    if (state.isLoading) {
+        return (<td colSpan="2"><LoadingAnimation /></td>)
+    }
+
     return (
         <>
             <td colSpan="2" className="tw-pr-8 tw-text-sm tw-font-medium tw-text-gray-800 tw-bg-greay-100 tw-whitespace-nowrap tw-border tw-border-slate-700">
                 <textarea
                     className={`tw-form-textarea tw-w-full tw-text-gray-700 tw-border-gray-300 tw-rounded-sm tw-leading-tight tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent tw-border tw-border-slate-700
-                    ${state.error ? 'tw-border-red-500' : 'tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent'}
-                    ${state.isLoading ? 'tw-animate-pulse tw-bg-sky-400 tw-opacity-100' : ''}`}
+                    ${state.error ? 'tw-border-red-500' : 'tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent'}`}
                     id="descriptionOverride"
                     rows="3"
                     onKeyUp={onKeyUp}
@@ -71,8 +75,7 @@ export default function PredictionDescriptionAndAgreed({ clientID, articleID, ye
                     tabIndex="-1"
                     type="checkbox"
                     className={`tw-form-input tw-mx-2 tw-form-checkbox tw-text-green-500 tw-rounded-sm
-                    ${state.error ? 'tw-border-red-500' : 'tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent'}
-                    ${state.isLoading ? 'tw-animate-pulse tw-bg-sky-400 tw-opacity-100' : ''}`}
+                    ${state.error ? 'tw-border-red-500' : 'tw-focus:tw-outline-none tw-focus:tw-ring-2 tw-focus:tw-ring-blue-500 tw-focus:tw-border-transparent'}`}
                     checked={checked}
                     onChange={isAgreedChange}
                 />

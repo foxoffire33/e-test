@@ -30,3 +30,7 @@ const OrdersList = ({ resource }) => {
         )
     });
 }
+
+// const SuspenseTrigger = () => {
+//     throw new Promise(() => {})
+//   }
