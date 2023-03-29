@@ -8,34 +8,35 @@ import { data } from "autoprefixer";
 import PredictionTableHead from './PredictionTableHead';
 import { AXIOS_REQUEST_ACTION } from '@/Data/AxiosRequestActions';
 import DisplayErrorMessages from '../DisplayErrorMessages';
-import Modal from '../Modal';
+import Modal from '../Modal/Modal';
 import { MODAL_ACTIONS } from '@/Data/ModalActions';
 import { createResource } from '@/Data/Api/Predictions';
 import paginationLoading from '../loading/paginationLoading';
+import PredictionInofrmationModalContent from '../Modal/Content/PredictionInofrmationModalContent';
+import LoadingAnimation from '../loading/LoadingAnimation';
 
 const PredictionTableBody = React.lazy(() => import('./PredictionTableBody'));
 
 export default function SalesForcastTable() {
     const [showModal, setShowModal] = useState(false);
+    const [selectedPrediction, setSelectedPrediction] = useState({ clientID: null, articleID: null, year: null, quater: null, type: null });
     const resource = createResource();
 
     return (
         <div className="tw-flex tw-flex-col">
+            <Modal title='Prediction information' showModal={showModal} closeButton={() => setShowModal(false)}>
+                <PredictionInofrmationModalContent selected={selectedPrediction} />
+            </Modal>
             <div className="tw-overflow-x-auto">
-                <button type='button' onClick={() => setShowModal(true) }>Open modal</button>
-                <Modal title='Prediction information' showModal={showModal} closeButton={() => setShowModal(false)}>
-                    Testing
-                </Modal>
-                <DisplayErrorMessages errorMessages={[[]]} />
                 <Suspense fallback={<PredictionTableBodyLoading />}>
                     <div className="tw-p-1.5 tw-w-full tw-inline-block tw-align-middle">
-                        <div class="tw-inline-block tw-relative tw-w-64">
+                        <div className="tw-inline-block tw-relative tw-w-64">
                             <Selector selectText='Article' selectOptions={resource?.data?.meta?.filters?.article?.options} callback={(itemID) => { resource.setRequestState({ ...resource.requestState, article: itemID, page: 1 }) }} />
                         </div>
-                        <div class="tw-inline-block tw-relative tw-w-64">
+                        <div className="tw-inline-block tw-relative tw-w-64">
                             <Selector selectText='Client' selectOptions={[]} callback={(itemID) => { resource.setRequestState({ ...resource.requestState, client: itemID, page: 1 }) }} />
                         </div>
-                        <div class="tw-inline-block tw-relative tw-w-64">
+                        <div className="tw-inline-block tw-relative tw-w-64">
                             <Selector selectText='type' selectOptions={[
                                 { id: 0, name: 'All' },
                                 { id: 1, name: 'Recuring' },
@@ -44,7 +45,7 @@ export default function SalesForcastTable() {
                                 callback={(itemID) => { resource.setRequestState({ ...resource.requestState, type: itemID }) }}
                             />
                         </div>
-                        <div class="tw-inline-block tw-relative tw-w-64">
+                        <div className="tw-inline-block tw-relative tw-w-64">
                             <input
                                 type="number"
                                 className="tw-bg-white tw-w-full tw-ml-8 tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded tw-text-gray-700" placeholder="Year..."
@@ -56,7 +57,7 @@ export default function SalesForcastTable() {
                             <table className="tw-min-w-full tw-divide-gray-200 tw-border-collapse tw-border tw-border-slate-500">
                                 <PredictionTableHead />
                                 <tbody className="tw-min-w-full tw-divide-gray-200">
-                                    <PredictionTableBody resource={resource} setShowModal={() => dispatch({ type: MODAL_ACTIONS.MODAL_CLOSE })} />
+                                    <PredictionTableBody resource={resource} showModal={showModal} setShowModal={(value) => setShowModal(value)} setSelectedPrediction={(selected) => setSelectedPrediction({ selected })} />
                                 </tbody>
                             </table>
                             <Pagination resource={resource} />

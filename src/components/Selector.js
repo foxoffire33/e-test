@@ -11,7 +11,7 @@ export default function Selector({ selectText, selectOptions, callback }) {
                 className={`tw-bg-white tw-w-full tw-p-2 tw-flex tw-items-center tw-justify-between tw-rounded`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={'currentColor'} className="tw-w-6 tw-h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
                 </svg>
             </div>
             <ul className={`tw-z-50 tw-bg-white tw-mt-2 tw-overflow-y-auto ${open ? "tw-max-h-60" : "tw-max-h-0"} `} >

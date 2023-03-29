@@ -5,8 +5,8 @@ export default function Home() {
   return (
     <>
       <Layout>
-        <div class="tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-6">
-          <h2 class="tw-text-lg tw-font-medium tw-mb-4">Sales forcast</h2>
+        <div className="tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-6">
+          <h2 className="tw-text-lg tw-font-medium tw-mb-4">Sales forcast</h2>
           <hr />
           <SalesForcastTable />
         </div>

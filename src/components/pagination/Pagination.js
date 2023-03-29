@@ -58,7 +58,7 @@ export default function Pagination({ resource, currentPage, onPageChange }) {
                 </svg>
             </div>
         </div>
-        <div class="tw-text-center tw-text-gray-500 tw-text-sm tw-mt-1 tw-flex tw-items-center tw-justify-center tw-pb-2 tw-lg:tw-px-0 tw-sm:tw-px-6 tw-px-4 tw-container">
+        <div className="tw-text-center tw-text-gray-500 tw-text-sm tw-mt-1 tw-flex tw-items-center tw-justify-center tw-pb-2 tw-lg:tw-px-0 tw-sm:tw-px-6 tw-px-4 tw-container">
             Showing page {data.meta.pagination.currentPage} of {data.meta.pagination.totalPages}.
         </div>
     </>)
